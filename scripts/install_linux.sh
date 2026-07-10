@@ -21,6 +21,21 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+# Install runtime dependencies
+echo "==> Installing runtime dependencies..."
+if command -v apt-get &>/dev/null; then
+    apt-get update -qq
+    apt-get install -y -qq libgl1 libglib2.0-0 libfontconfig1 \
+        libxcb-xinerama0 libxcb-cursor0 libxkbcommon0 \
+        libdbus-1-3 libegl1 2>/dev/null || true
+elif command -v dnf &>/dev/null; then
+    dnf install -y -q mesa-libGL glib2 fontconfig \
+        libxcb libxkbcommon dbus-libs mesa-libEGL 2>/dev/null || true
+elif command -v pacman &>/dev/null; then
+    pacman -S --noconfirm --needed mesa glib2 fontconfig \
+        libxcb libxkbcommon dbus 2>/dev/null || true
+fi
+
 # Copy application files
 echo "==> Copying application to ${APP_DIR}..."
 rm -rf "$APP_DIR"
