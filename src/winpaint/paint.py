@@ -1866,34 +1866,48 @@ class PaintWindow(QMainWindow):
 
     # -- горячие клавиши --------------------------------------------------
     def build_shortcuts(self):
-        def act(seq, slot):
-            a = QAction(self)
+        import sys
+        menubar = self.menuBar()
+        if sys.platform != 'darwin':
+            menubar.hide()  # Прячем на Windows/Linux, чтобы не портить Ribbon
+            
+        edit_menu = menubar.addMenu("Правка")
+        file_menu = menubar.addMenu("Файл")
+        view_menu = menubar.addMenu("Вид")
+
+        def act(menu, seq, slot, name=""):
+            a = QAction(name, self)
             a.setShortcut(seq)
+            a.setShortcutContext(Qt.ApplicationShortcut)
             a.triggered.connect(slot)
+            menu.addAction(a)
             self.addAction(a)
             return a
-        act(QKeySequence.New, self.new_file)
-        act(QKeySequence.Open, self.open_file)
-        act(QKeySequence.Save, self.save)
-        act(QKeySequence("Ctrl+Shift+S"), self.save_as)
-        act(QKeySequence.Print, self.print_image)
-        act(QKeySequence.Undo, self.canvas.undo)
-        # Redo: на Linux стандартное сочетание — Ctrl+Y, на других ОС — Ctrl+Shift+Z.
-        # Регистрируем оба варианта, не создавая дубликатов с QKeySequence.Redo.
+            
+        act(file_menu, QKeySequence.New, self.new_file, "Новый")
+        act(file_menu, QKeySequence.Open, self.open_file, "Открыть")
+        act(file_menu, QKeySequence.Save, self.save, "Сохранить")
+        act(file_menu, QKeySequence("Ctrl+Shift+S"), self.save_as, "Сохранить как")
+        act(file_menu, QKeySequence.Print, self.print_image, "Печать")
+        
+        act(edit_menu, QKeySequence.Undo, self.canvas.undo, "Отменить")
+        
         redo_std = QKeySequence(QKeySequence.Redo)
-        act(redo_std, self.canvas.redo)
+        act(edit_menu, redo_std, self.canvas.redo, "Повторить")
         for extra in ("Ctrl+Y", "Ctrl+Shift+Z"):
             if QKeySequence(extra) != redo_std:
-                act(QKeySequence(extra), self.canvas.redo)
-        act(QKeySequence.Copy, self.canvas.copy_selection)
-        act(QKeySequence.Cut, self.canvas.cut_selection)
-        act(QKeySequence.Paste, self.canvas.paste)
-        act(QKeySequence.SelectAll, self.canvas.select_all)
-        act(QKeySequence.Delete, self.canvas.delete_selection)
-        act(QKeySequence.ZoomIn, self.zoom_in)
-        act(QKeySequence("Ctrl+="), self.zoom_in)
-        act(QKeySequence.ZoomOut, self.zoom_out)
-        act(QKeySequence("Escape"), self.on_escape)
+                act(edit_menu, QKeySequence(extra), self.canvas.redo, "Повторить")
+                
+        act(edit_menu, QKeySequence.Copy, self.canvas.copy_selection, "Копировать")
+        act(edit_menu, QKeySequence.Cut, self.canvas.cut_selection, "Вырезать")
+        act(edit_menu, QKeySequence.Paste, self.canvas.paste, "Вставить")
+        act(edit_menu, QKeySequence.SelectAll, self.canvas.select_all, "Выделить всё")
+        act(edit_menu, QKeySequence.Delete, self.canvas.delete_selection, "Удалить")
+        
+        act(view_menu, QKeySequence.ZoomIn, self.zoom_in, "Увеличить")
+        act(view_menu, QKeySequence("Ctrl+="), self.zoom_in, "Увеличить (+)")
+        act(view_menu, QKeySequence.ZoomOut, self.zoom_out, "Уменьшить")
+        act(view_menu, QKeySequence("Escape"), self.on_escape, "Сброс")
 
     def on_escape(self):
         if self.canvas.text_edit is not None:
@@ -1910,9 +1924,10 @@ class PaintWindow(QMainWindow):
         QMainWindow { background:#f5f6f8; }
         QTabWidget::pane { border-top:1px solid #d0d3d8; background:#fbfbfc; }
         QTabBar::tab {
-            background:transparent; padding:5px 16px; margin-right:1px;
+            background:transparent; padding:5px 20px; margin-right:1px;
             color:#333; font-size:13px; border:1px solid transparent;
             border-top-left-radius:3px; border-top-right-radius:3px;
+            min-width: 65px;
         }
         QTabBar::tab:selected { background:#fbfbfc; border:1px solid #d0d3d8;
             border-bottom:1px solid #fbfbfc; }
@@ -2222,6 +2237,27 @@ def main():
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
     app = QApplication(sys.argv)
+    
+    # Принудительно устанавливаем светлую тему (Light Mode),
+    # чтобы избежать конфликтов с темной темой ОС
+    from PyQt5.QtGui import QPalette, QColor
+    app.setStyle("Fusion")
+    palette = QPalette()
+    palette.setColor(QPalette.Window, QColor(245, 246, 248))
+    palette.setColor(QPalette.WindowText, Qt.black)
+    palette.setColor(QPalette.Base, Qt.white)
+    palette.setColor(QPalette.AlternateBase, QColor(245, 246, 248))
+    palette.setColor(QPalette.ToolTipBase, Qt.white)
+    palette.setColor(QPalette.ToolTipText, Qt.black)
+    palette.setColor(QPalette.Text, Qt.black)
+    palette.setColor(QPalette.Button, QColor(245, 246, 248))
+    palette.setColor(QPalette.ButtonText, Qt.black)
+    palette.setColor(QPalette.BrightText, Qt.red)
+    palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+    palette.setColor(QPalette.HighlightedText, Qt.white)
+    app.setPalette(palette)
+
     app.setApplicationName("Paint")
     app.setApplicationDisplayName("Paint")
     # связываем окно с ярлыком winpaint.desktop, чтобы GNOME показывал

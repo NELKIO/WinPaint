@@ -406,32 +406,18 @@ def _star_polygon(points, s):
     return QPolygonF(pts)
 
 
-def render_app_icon(size=256):
-    """Иконка приложения (палитра художника), рисуется в нужном размере."""
-    pm = QPixmap(size, size)
-    pm.fill(Qt.transparent)
-    p = QPainter(pm)
-    p.setRenderHint(QPainter.Antialiasing, True)
-    s = size / 64.0
-    p.scale(s, s)
-    grad = QLinearGradient(0, 0, 64, 64)
-    grad.setColorAt(0, QColor("#ffd24d"))
-    grad.setColorAt(1, QColor("#e89a2b"))
-    p.setBrush(QBrush(grad))
-    p.setPen(_pen("#9a6a10", 2))
-    path = QPainterPath()
-    path.addEllipse(QRectF(6, 8, 52, 48))
-    hole = QPainterPath()
-    hole.addEllipse(QRectF(38, 30, 14, 14))
-    p.drawPath(path.subtracted(hole))
-    for col, x, y in [("#e23b3b", 16, 18), ("#2a7de1", 30, 14),
-                      ("#3bb24a", 44, 18), ("#7a3bd1", 18, 36)]:
-        p.setBrush(QColor(col))
-        p.setPen(Qt.NoPen)
-        p.drawEllipse(QRectF(x, y, 8, 8))
-    p.end()
-    return pm
-
-
 def app_icon():
-    return QIcon(render_app_icon(64))
+    import os
+    import sys
+    from PyQt5.QtGui import QIcon
+    
+    if getattr(sys, 'frozen', False):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        
+    icon_path = os.path.join(base_path, 'assets', 'icon_256.png')
+    return QIcon(icon_path)
+
+def render_app_icon(size=256):
+    return app_icon().pixmap(size, size)
