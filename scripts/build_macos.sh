@@ -47,13 +47,13 @@ python3 -m PyInstaller \
     --windowed \
     --name WinPaint \
     $ICNS_OPT \
-    --add-data "assets:assets" \
+    --add-data "$ROOT/assets:assets" \
     --hidden-import PyQt5.sip \
     --collect-all PyQt5 \
     --distpath "$ROOT/dist/macos" \
     --workpath "$ROOT/build/macos" \
     --specpath "$ROOT/build" \
-    src/run.py
+    "$ROOT/src/run.py"
 
 # Package as zip
 echo "==> Packaging WinPaint-macOS.zip..."

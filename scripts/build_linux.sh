@@ -22,13 +22,13 @@ echo "==> Running PyInstaller..."
 python3 -m PyInstaller \
     --noconfirm \
     --name WinPaint \
-    --add-data "assets:assets" \
+    --add-data "$ROOT/assets:assets" \
     --hidden-import PyQt5.sip \
     --collect-all PyQt5 \
     --distpath "$ROOT/dist/linux" \
     --workpath "$ROOT/build/linux" \
     --specpath "$ROOT/build" \
-    src/run.py
+    "$ROOT/src/run.py"
 
 # Prepare release directory
 echo "==> Packaging release..."
