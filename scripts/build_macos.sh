@@ -55,6 +55,17 @@ python3 -m PyInstaller \
     --specpath "$ROOT/build" \
     "$ROOT/src/run.py"
 
+# Enforce Light Mode on macOS (keeps title bar white/gray)
+echo "==> Forcing Light Mode in Info.plist..."
+PLIST="$ROOT/dist/macos/WinPaint.app/Contents/Info.plist"
+if [ -f "$PLIST" ]; then
+    plutil -insert NSRequiresAquaSystemAppearance -bool YES "$PLIST" || true
+    
+    # Re-sign the app since modifying Info.plist breaks the signature
+    echo "==> Re-signing app bundle..."
+    codesign --force --deep -s - "$ROOT/dist/macos/WinPaint.app" || true
+fi
+
 # Package as zip
 echo "==> Packaging WinPaint-macOS.zip..."
 cd "$ROOT/dist/macos"
