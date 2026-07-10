@@ -1,0 +1,17 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Paint
+Name[ru]=Paint
+GenericName=Image Editor
+GenericName[ru]=Графический редактор
+Comment=Simple image editor inspired by Windows 10 Paint
+Comment[ru]=Простой графический редактор, как в Windows 10
+Exec=winpaint %F
+Icon=winpaint
+Terminal=false
+Categories=Graphics;2DGraphics;RasterGraphics;
+StartupNotify=true
+StartupWMClass=winpaint
+MimeType=image/png;image/jpeg;image/bmp;image/gif;image/tiff;image/webp;image/x-icon;image/x-ms-bmp;
+Keywords=paint;draw;image;graphics;editor;
