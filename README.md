@@ -4,7 +4,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
 ![PyQt5](https://img.shields.io/badge/GUI-PyQt5-green?logo=qt&logoColor=white)
-![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS-lightgrey)
+![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 A faithful recreation of the classic Microsoft Paint from Windows 10, built entirely with Python and PyQt5. Runs natively on Linux and macOS with a fully Russian-language interface.
@@ -36,10 +36,15 @@ A faithful recreation of the classic Microsoft Paint from Windows 10, built enti
 
 ### macOS
 
-1. Download **WinPaint-macOS.zip** from [Releases](../../releases).
+1. Download **WinPaint-macOS-Intel.zip** from [Releases](../../releases) (runs on Intel Macs natively and on Apple Silicon via Rosetta 2).
 2. Extract the archive.
 3. Drag **WinPaint.app** into your **Applications** folder.
 4. On first launch, right-click the app → **Open** (to bypass Gatekeeper).
+
+### Windows
+
+1. Download **WinPaint-Windows-x64.exe** from [Releases](../../releases).
+2. Run it — no installation required. If SmartScreen warns you, click **More info** → **Run anyway**.
 
 ### Linux
 

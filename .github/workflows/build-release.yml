@@ -1,0 +1,89 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-macos-intel:
+    name: Build macOS (Intel x86_64)
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install PyQt5 pyinstaller
+
+      - name: Build
+        run: bash scripts/build_macos.sh
+
+      - name: Rename artifact
+        run: mv dist/WinPaint-macOS.zip dist/WinPaint-macOS-Intel.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-intel
+          path: dist/WinPaint-macOS-Intel.zip
+
+  build-windows:
+    name: Build Windows (x64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install PyQt5 pyinstaller pillow
+
+      - name: Create .ico icon
+        run: |
+          python -c "from PIL import Image; img = Image.open('assets/icon_256.png'); img.save('WinPaint.ico', sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)])"
+
+      - name: Build
+        run: >
+          pyinstaller --noconfirm --onefile --windowed --name WinPaint
+          --icon WinPaint.ico
+          --add-data "assets;assets"
+          --hidden-import PyQt5.sip
+          --collect-all PyQt5
+          src/run.py
+
+      - name: Rename artifact
+        run: Move-Item dist/WinPaint.exe dist/WinPaint-Windows-x64.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/WinPaint-Windows-x64.exe
+
+  release:
+    name: Publish release
+    needs: [build-macos-intel, build-windows]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: artifacts
+
+      - name: Create release and upload assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "WinPaint ${GITHUB_REF_NAME}" \
+            --generate-notes \
+            artifacts/*
