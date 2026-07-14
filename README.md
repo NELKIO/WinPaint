@@ -36,7 +36,7 @@ A faithful recreation of the classic Microsoft Paint from Windows 10, built enti
 
 ### macOS
 
-1. Download **WinPaint-macOS-Intel.zip** from [Releases](../../releases) (runs on Intel Macs natively and on Apple Silicon via Rosetta 2).
+1. Download the build for your Mac from [Releases](../../releases): **WinPaint-macOS-AppleSilicon.zip** (M1/M2/M3/M4) or **WinPaint-macOS-Intel.zip** (Intel).
 2. Extract the archive.
 3. Drag **WinPaint.app** into your **Applications** folder.
 4. On first launch, right-click the app → **Open** (to bypass Gatekeeper).

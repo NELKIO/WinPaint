@@ -32,7 +32,8 @@ python3 -m PyInstaller \
 
 # Prepare release directory
 echo "==> Packaging release..."
-RELEASE="$ROOT/dist/linux/WinPaint-Linux-x86_64"
+ARCH="$(uname -m)"
+RELEASE="$ROOT/dist/linux/WinPaint-Linux-$ARCH"
 mkdir -p "$RELEASE"
 cp -r "$ROOT/dist/linux/WinPaint/"* "$RELEASE/"
 cp "$ROOT/scripts/install_linux.sh" "$RELEASE/install.sh"
@@ -43,11 +44,11 @@ cp "$ROOT/assets/icon_"*.png "$RELEASE/icons/"
 
 # Compress
 cd "$ROOT/dist/linux"
-tar czf "$ROOT/dist/WinPaint-Linux-x86_64.tar.gz" WinPaint-Linux-x86_64
+tar czf "$ROOT/dist/WinPaint-Linux-$ARCH.tar.gz" "WinPaint-Linux-$ARCH"
 
 echo ""
 echo "============================================================"
 echo "  Linux build complete!"
-echo "  Dir:     dist/linux/WinPaint-Linux-x86_64/"
-echo "  Archive: dist/WinPaint-Linux-x86_64.tar.gz"
+echo "  Dir:     dist/linux/WinPaint-Linux-$ARCH/"
+echo "  Archive: dist/WinPaint-Linux-$ARCH.tar.gz"
 echo "============================================================"
