@@ -9,6 +9,8 @@
 
 A faithful recreation of the classic Microsoft Paint from Windows 10, built entirely with Python and PyQt5. Runs natively on Linux and macOS with a fully Russian-language interface.
 
+**[Open WinPaint in your browser](https://nelkio.github.io/WinPaint/)** — a lightweight edition with a brush, eraser, color and width controls, undo/redo, and local PNG import/export. No installation or upload required. For shapes, text, selections, and printing, use the [desktop release](https://github.com/NELKIO/WinPaint/releases).
+
 ![WinPaint Screenshot](assets/screenshot.png)
 
 ---
