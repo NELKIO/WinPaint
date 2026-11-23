@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ecefe8"><title>WinPaint — онлайн-редактор</title>
+  <link rel="stylesheet" href="./style.css"><script defer src="./editor.js"></script>
+</head>
+<body>
+  <header><div class="brand"><span class="mark" aria-hidden="true">W</span><h1>WinPaint</h1><span class="edition">WEB</span></div>
+    <a href="https://github.com/NELKIO/WinPaint/releases">Скачать полную версию</a></header>
+  <main><section class="workspace" aria-label="Редактор">
+    <div class="bar" aria-label="Инструменты">
+      <div class="group"><button id="brush" aria-pressed="true">Кисть</button><button id="eraser" aria-pressed="false">Ластик</button></div>
+      <div class="group"><label>Цвет кисти <input id="color" type="color" value="#244e40"></label><label>Толщина <input id="size" type="range" min="1" max="64" value="8"></label><output id="size-value" for="size">8 px</output></div>
+      <div class="group"><button id="undo" disabled>Отменить</button><button id="redo" disabled>Повторить</button></div>
+      <div class="group files"><button id="open">Открыть PNG</button><input type="file" id="file" accept="image/png,.png" hidden><button id="save">Сохранить PNG</button></div>
+    </div>
+    <div class="mat"><canvas width="960" height="540" aria-label="Холст для рисования">Для рисования необходим браузер с поддержкой Canvas.</canvas></div>
+    <footer><span role="status" aria-live="polite">Готово к рисованию</span><span id="dimensions">960 × 540 px</span></footer>
+  </section><p class="note">Рисуйте мышью, пером или пальцем. Файлы остаются на вашем устройстве. Чтобы оставить рисунок, сохраните PNG перед выходом.</p><noscript>Для работы редактора включите JavaScript.</noscript></main>
+</body></html>
