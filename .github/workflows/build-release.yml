@@ -55,8 +55,23 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: pip install PyQt5 pyinstaller
+      - name: Install dependencies (x86_64)
+        if: matrix.arch == 'x86_64'
+        run: python -m pip install PyQt5 pyinstaller
+
+      # PyPI does not provide the PyQt5 Linux ARM64 wheel. Use Ubuntu's
+      # matching Qt/Python packages, not a source build against missing qmake.
+      - name: Install dependencies (ARM64)
+        if: matrix.arch == 'aarch64'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y python3-pyqt5 python3-venv qt5-image-formats-plugins
+          /usr/bin/python3 -m venv --system-site-packages "$RUNNER_TEMP/paint-env"
+          "$RUNNER_TEMP/paint-env/bin/python" -m pip install pyinstaller
+          printf '%s\n' "$RUNNER_TEMP/paint-env/bin" >> "$GITHUB_PATH"
+
+      - name: Desktop regression tests
+        run: PYTHONPATH=src QT_QPA_PLATFORM=offscreen python3 -m unittest discover -s tests -v
 
       - name: Build
         run: bash scripts/build_linux.sh

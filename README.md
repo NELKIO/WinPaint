@@ -9,7 +9,7 @@
 
 A faithful recreation of the classic Microsoft Paint from Windows 10, built entirely with Python and PyQt5. Runs natively on Linux and macOS with a fully Russian-language interface.
 
-**[Open WinPaint in your browser](https://nelkio.github.io/WinPaint/)** — a lightweight edition with a brush, eraser, color and width controls, undo/redo, and local PNG import/export. No installation or upload required. For shapes, text, selections, and printing, use the [desktop release](https://github.com/NELKIO/WinPaint/releases).
+**[Open WinPaint in your browser](https://nelkio.github.io/WinPaint/)** — the Russian Paint ribbon, drawing tools, brushes, shapes, text, selections and image transformations, without installation. Images stay on your device. Use **Файл → Сохранить как…** to download a drawing. The [native desktop builds](https://github.com/NELKIO/WinPaint/releases) are also available.
 
 ![WinPaint Screenshot](assets/screenshot.png)
 
@@ -35,6 +35,16 @@ A faithful recreation of the classic Microsoft Paint from Windows 10, built enti
 ---
 
 ## 📥 Installation
+
+### Browser
+
+Open the [hosted editor](https://nelkio.github.io/WinPaint/), or serve the `web/` directory locally:
+
+```bash
+python3 -m http.server 8000 --bind 127.0.0.1 --directory web
+```
+
+Visit `http://127.0.0.1:8000/`. No compilation or CDN is required. The browser version supports PNG, JPEG, BMP, TIFF, WebP and ICO, plus opening GIFs. The canvas limit is 4096 pixels per side and 4 megapixels total; undo/redo retains up to 40 edits within a 64 MiB pixel-history budget. Saving creates a download rather than overwriting the original file. OS clipboard access depends on browser permissions; copied selections can also be pasted within the editor. Printing uses the browser print dialog.
 
 ### macOS
 

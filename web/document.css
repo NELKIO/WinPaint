@@ -1,0 +1,28 @@
+#surface { position:relative; flex:none; overflow:visible }
+#canvas { display:block; touch-action:none; user-select:none }
+.eraser-tip { pointer-events:none; position:absolute; transform:translate(-50%,-50%); border:1px solid #444; box-shadow:inset 0 0 0 1px white; z-index:2 }
+.pixel-grid,.resize-outline { position:absolute; left:0; top:0; pointer-events:none }
+.pixel-grid { inset:0; background-image:linear-gradient(to right,#80808080 1px,transparent 1px),linear-gradient(to bottom,#80808080 1px,transparent 1px) }
+.resize-outline { outline:1px dashed #202020 }
+.canvas-handle { position:absolute; width:8px; height:8px; background:#fff; border:1px solid #555; box-sizing:border-box; touch-action:none; z-index:3 }
+.canvas-handle::after { content:''; position:absolute; inset:-4px }
+#handle-e { left:calc(100% + 2px); top:50%; transform:translateY(-50%); cursor:ew-resize }
+#handle-s { left:50%; top:calc(100% + 2px); transform:translateX(-50%); cursor:ns-resize }
+#handle-se { left:calc(100% + 2px); top:calc(100% + 2px); cursor:nwse-resize }
+.paint-dialog { color:#161616; background:#f5f5f5; padding:0; border:1px solid #888; box-shadow:0 6px 26px #0004; max-width:calc(100vw - 20px); font:13px 'Segoe UI',Arial,sans-serif; }
+.paint-dialog::backdrop { background:#10102033 }
+.paint-dialog form { display:grid; gap:12px; padding:0 16px 12px }
+.paint-dialog h2 { font-size:14px; font-weight:500; background:#fff; border-bottom:1px solid #ccc; padding:8px 12px; margin:0 -16px }
+.paint-dialog label { display:block; margin:6px 0 }
+.paint-dialog input,.paint-dialog select { color:#181818; font:inherit }
+.paint-dialog input[type=number] { width:7em }
+.paint-dialog footer { display:flex; justify-content:flex-end; gap:6px }
+.paint-dialog button { border:1px solid #aaa; background:#eee; padding:4px 12px; color:#111; font:inherit }
+.paint-dialog button:hover,.paint-dialog button:focus-visible { border-color:#0078d4; background:#e2f1ff }
+.dialog-error { color:#9b1c1c; margin:0 } .dialog-error:empty { display:none }
+@media print {
+  body { background:white!important; display:block!important; overflow:visible!important }
+  body * { visibility:hidden }
+  #workspace,#surface { position:static!important; display:block!important; padding:0!important; margin:0!important; overflow:visible!important; height:auto!important; min-height:0!important; width:auto!important; background:white!important }
+  #canvas { position:absolute!important; left:0!important; top:0!important; width:auto!important; height:auto!important; max-width:100%!important; max-height:95vh!important; object-fit:contain; visibility:visible!important; border:none!important; box-shadow:none!important; image-rendering:auto!important }
+}
