@@ -79,11 +79,12 @@ $('file').onchange = async () => {
     const w = header.getUint32(16), h = header.getUint32(20);
     if (!w || !h || w > 4096 || h > 4096 || w*h > 4194304) throw Error('размер превышает лимит холста (4096 по стороне, 4 Мп)');
     bitmap = await createImageBitmap(file);
-    if (bitmap.width !== w || bitmap.height !== h) throw Error('неверные размеры PNG');
-    canvas.width = w; canvas.height = h;
+    // EXIF orientation can swap the decoded axes.
+    if (!((bitmap.width === w && bitmap.height === h) || (bitmap.width === h && bitmap.height === w))) throw Error('неверные размеры PNG');
+    canvas.width = bitmap.width; canvas.height = bitmap.height;
     ctx.drawImage(bitmap, 0, 0);
     undo.length = redo.length = 0;
-    $('dimensions').textContent = `${w} × ${h} px`;
+    $('dimensions').textContent = `${canvas.width} × ${canvas.height} px`;
     statusLine.textContent = `Открыт: ${file.name}`;
   } catch (error) { statusLine.textContent = `Не удалось открыть ${file.name}: ${error.message}`; }
   finally { bitmap?.close(); busy = false; controls(); }

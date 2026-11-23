@@ -254,6 +254,8 @@ class Canvas(QWidget):
         self.commit_selection(silent=True)
         self.redo_stack.append(self.image.copy())
         self.image = self.undo_stack.pop()
+        self.drawing = False
+        self.reset_curve()
         self.clear_selection()
         self.update_geometry()
         self.win.dirty = self.image != self.win.saved_image
@@ -267,6 +269,8 @@ class Canvas(QWidget):
             return
         self.undo_stack.append(self.image.copy())
         self.image = self.redo_stack.pop()
+        self.drawing = False
+        self.reset_curve()
         self.clear_selection()
         self.update_geometry()
         self.win.dirty = self.image != self.win.saved_image
@@ -861,6 +865,7 @@ class Canvas(QWidget):
             path.quadTo(QPointF(pt), QPointF(self.curve_p2))
             p.drawPath(path)
             p.end()
+            self.win.mark_dirty()
             self.reset_curve()
             self.update()
 
@@ -1151,6 +1156,8 @@ class Canvas(QWidget):
     # -- новый / загрузка -------------------------------------------------
     def new_image(self, w=960, h=540):
         self.cancel_text()
+        self.drawing = False
+        self.reset_curve()
         self.clear_selection()
         self.image = QImage(w, h, QImage.Format_ARGB32)
         self.image.fill(Qt.white)
@@ -1163,6 +1170,8 @@ class Canvas(QWidget):
 
     def load_image(self, img):
         self.cancel_text()
+        self.drawing = False
+        self.reset_curve()
         self.clear_selection()
         self.image = img.convertToFormat(QImage.Format_ARGB32)
         self.undo_stack.clear()

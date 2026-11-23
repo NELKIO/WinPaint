@@ -39,6 +39,24 @@ class DocumentHistory(unittest.TestCase):
         self.canvas.redo()
         self.assertTrue(self.window.dirty)
 
+    def test_undo_cancels_unfinished_curve_preview(self):
+        from PyQt5.QtCore import QPoint
+        self.canvas.handle_curve_press(QPoint(20, 20))
+        self.canvas.handle_curve_release(QPoint(120, 20))
+        self.canvas.undo()
+        self.assertIsNone(self.canvas.temp_image)
+        self.assertEqual(self.canvas.curve_stage, 0)
+        self.assertFalse(self.window.dirty)
+
+    def test_curve_finished_after_save_is_unsaved(self):
+        from PyQt5.QtCore import QPoint
+        self.canvas.handle_curve_press(QPoint(20, 20))
+        self.canvas.handle_curve_release(QPoint(120, 20))
+        self.window.save()
+        self.canvas.handle_curve_press(QPoint(60, 80))
+        self.canvas.handle_curve_release(QPoint(60, 80))
+        self.assertTrue(self.window.dirty)
+
     def test_new_document_disables_undo(self):
         self.window.new_file()
         self.assertFalse(self.window.act_undo_q.isEnabled())

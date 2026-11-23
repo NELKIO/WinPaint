@@ -101,6 +101,26 @@ class BrowserEditor(unittest.TestCase):
             self.assertEqual(self.pixel(), drawn)
             self.assertTrue(self.page.get_by_role('button', name='Отменить').is_enabled())
 
+    def test_release_link_keeps_drawing_open(self):
+        self.stroke(); drawn = self.pixel()
+        link = self.page.get_by_role('link', name='Скачать полную версию')
+        self.page.context.route(link.get_attribute('href'), lambda route: route.fulfill(body='Releases'))
+        with self.page.expect_popup(timeout=1500) as popup:
+            link.click()
+        popup.value.close()
+        self.assertEqual(self.pixel(), drawn)
+
+    def test_oriented_png_import(self):
+        import zlib
+        def chunk(kind, data):
+            return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data))
+        exif = bytes.fromhex('49492a0008000000010012010300010000000600000000000000')
+        png = (b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 80,60,8,2,0,0,0)) +
+               chunk(b'eXIf', exif) + chunk(b'IDAT', zlib.compress((b'\0' + bytes([24,68,12])*80)*60)) + chunk(b'IEND', b''))
+        self.page.locator('input[type=file]').set_input_files({'name':'rotated.png','mimeType':'image/png','buffer':png})
+        self.page.wait_for_function("document.querySelector('[role=status]').textContent.includes('rotated.png')")
+        self.assertEqual(self.pixel(20,20), [24,68,12,255])
+
     def test_narrow_layout_and_release_link(self):
         self.page.set_viewport_size({'width': 360, 'height': 720})
         self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
