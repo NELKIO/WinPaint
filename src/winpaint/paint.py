@@ -256,6 +256,8 @@ class Canvas(QWidget):
         self.image = self.undo_stack.pop()
         self.clear_selection()
         self.update_geometry()
+        self.win.dirty = self.image != self.win.saved_image
+        self.win.update_title()
         self.win.update_actions()
         self.win.update_status_size()
 
@@ -267,6 +269,8 @@ class Canvas(QWidget):
         self.image = self.redo_stack.pop()
         self.clear_selection()
         self.update_geometry()
+        self.win.dirty = self.image != self.win.saved_image
+        self.win.update_title()
         self.win.update_actions()
         self.win.update_status_size()
 
@@ -1240,6 +1244,7 @@ class PaintWindow(QMainWindow):
         super().__init__()
         self.canvas = Canvas(self)
         self.file_path = None
+        self.saved_image = QImage(self.canvas.image)
         self.dirty = False
 
         # параметры текста
@@ -2098,8 +2103,7 @@ class PaintWindow(QMainWindow):
             return
         self.canvas.new_image()
         self.file_path = None
-        self.dirty = False
-        self.update_title()
+        self.mark_clean()
 
     def open_file(self, path=None):
         if not self.confirm_discard():
@@ -2115,8 +2119,7 @@ class PaintWindow(QMainWindow):
             return
         self.canvas.load_image(img)
         self.file_path = path
-        self.dirty = False
-        self.update_title()
+        self.mark_clean()
 
     def save(self):
         if self.file_path:
@@ -2166,8 +2169,7 @@ class PaintWindow(QMainWindow):
             QMessageBox.warning(self, "Paint", "Не удалось сохранить файл.")
             return
         self.file_path = path
-        self.dirty = False
-        self.update_title()
+        self.mark_clean()
 
     def print_image(self):
         from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
@@ -2187,6 +2189,13 @@ class PaintWindow(QMainWindow):
     # ===================================================================
     #  Прочее
     # ===================================================================
+    def mark_clean(self):
+        # QImage shares the pixel buffer until either copy is modified.
+        self.saved_image = QImage(self.canvas.image)
+        self.dirty = False
+        self.update_title()
+        self.update_actions()
+
     def mark_dirty(self):
         if not self.dirty:
             self.dirty = True
