@@ -1,21 +1,74 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ecefe8"><title>WinPaint — онлайн-редактор</title>
-  <link rel="stylesheet" href="./style.css"><script defer src="./editor.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f8">
+  <title>Безымянный — Paint</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./editor.js"></script>
 </head>
 <body>
-  <header><div class="brand"><span class="mark" aria-hidden="true">W</span><h1>WinPaint</h1><span class="edition">WEB</span></div>
-    <a target="_blank" rel="noopener noreferrer" href="https://github.com/NELKIO/WinPaint/releases">Скачать полную версию</a></header>
-  <main><section class="workspace" aria-label="Редактор">
-    <div class="bar" aria-label="Инструменты">
-      <div class="group"><button id="brush" aria-pressed="true">Кисть</button><button id="eraser" aria-pressed="false">Ластик</button></div>
-      <div class="group"><label>Цвет кисти <input id="color" type="color" value="#244e40"></label><label>Толщина <input id="size" type="range" min="1" max="64" value="8"></label><output id="size-value" for="size">8 px</output></div>
-      <div class="group"><button id="undo" disabled>Отменить</button><button id="redo" disabled>Повторить</button></div>
-      <div class="group files"><button id="open">Открыть PNG</button><input type="file" id="file" accept="image/png,.png" hidden><button id="save">Сохранить PNG</button></div>
+  <header><h1 id="caption">Безымянный — Paint</h1></header>
+  <div id="ribbon" aria-label="Лента Paint">
+    <div class="tab-strip">
+      <button id="file-menu" data-menu="file" aria-haspopup="menu" aria-expanded="false">Файл</button>
+      <div class="tabs" role="tablist" aria-label="Вкладки ленты">
+        <button role="tab" id="tab-home" aria-selected="true" aria-controls="home">Главная</button>
+        <button role="tab" id="tab-view" aria-selected="false" aria-controls="view" tabindex="-1">Вид</button>
+      </div>
+      <div class="quick" role="group" aria-label="Быстрый доступ">
+        <button id="save" data-command="save" aria-label="Сохранить" title="Сохранить (Ctrl+S)"><img src="./icons/save.png" alt=""></button>
+        <button id="undo" data-command="undo" aria-label="Отменить" title="Отменить (Ctrl+Z)" disabled><img src="./icons/undo.png" alt=""></button>
+        <button id="redo" data-command="redo" aria-label="Вернуть" title="Вернуть (Ctrl+Y)" disabled><img src="./icons/redo.png" alt=""></button>
+      </div>
     </div>
-    <div class="mat"><canvas width="960" height="540" aria-label="Холст для рисования">Для рисования необходим браузер с поддержкой Canvas.</canvas></div>
-    <footer><span role="status" aria-live="polite">Готово к рисованию</span><span id="dimensions">960 × 540 px</span></footer>
-  </section><p class="note">Рисуйте мышью, пером или пальцем. Файлы остаются на вашем устройстве. Чтобы оставить рисунок, сохраните PNG перед выходом.</p><noscript>Для работы редактора включите JavaScript.</noscript></main>
-</body></html>
+    <div class="ribbon-scroll">
+      <div id="home" role="tabpanel" aria-labelledby="tab-home" class="ribbon-page">
+        <section class="rgroup clipboard" aria-labelledby="label-clipboard"><div class="group-body">
+          <button class="big" data-command="paste"><img src="./icons/paste.png" alt="">Вставить</button>
+          <div class="stack">
+            <button data-command="cut"><img src="./icons/cut.png" alt="">Вырезать</button>
+            <button data-command="copy"><img src="./icons/copy.png" alt="">Копировать</button>
+          </div>
+        </div><h2 id="label-clipboard">Буфер обмена</h2></section>
+        <section class="rgroup image-group" aria-labelledby="label-image"><div class="group-body">
+          <div class="split"><button class="big" data-tool="select"><img src="./icons/select.png" alt="">Выделить</button><button class="caret" aria-label="Параметры выделения" data-menu="select"></button></div>
+          <div class="stack">
+            <button data-command="crop"><img src="./icons/crop.png" alt="">Обрезать</button>
+            <button data-command="resize"><img src="./icons/resize.png" alt="">Изменить размер</button>
+            <button data-menu="rotate"><img src="./icons/rotate.png" alt="">Повернуть</button>
+          </div>
+        </div><h2 id="label-image">Изображение</h2></section>
+        <section class="rgroup" aria-labelledby="label-tools"><div class="group-body"><div id="tools" class="tools-grid"></div></div><h2 id="label-tools">Инструменты</h2></section>
+        <section class="rgroup" aria-labelledby="label-brush"><div class="group-body"><button class="big dropdown" aria-label="Кисти" title="Кисти" data-menu="brush"><img src="./icons/brush.png" alt=""></button></div><h2 id="label-brush">Кисти</h2></section>
+        <section class="rgroup" aria-labelledby="label-shapes"><div class="group-body">
+          <div id="shapes" class="shapes-grid"></div>
+          <div class="stack styles"><button data-menu="outline">Контур</button><button data-menu="fill">Заливка</button></div>
+        </div><h2 id="label-shapes">Фигуры</h2></section>
+        <section class="rgroup" aria-labelledby="label-width"><div class="group-body"><button class="big dropdown" data-menu="width" aria-label="Толщина линии" title="Толщина линии"><span class="width-sample"></span></button></div><h2 id="label-width">Размер</h2></section>
+        <section class="rgroup" aria-labelledby="label-colors"><div class="group-body colors">
+          <label class="color-box"><input type="color" id="color1" value="#000000">Цвет 1</label>
+          <label class="color-box"><input type="color" id="color2" value="#ffffff">Цвет 2</label>
+          <div id="palette" aria-label="Палитра" role="group"></div>
+          <button id="edit-colors" class="big">Изменение<br>цветов</button>
+        </div><h2 id="label-colors">Цвета</h2></section>
+      </div>
+      <div id="view" role="tabpanel" aria-labelledby="tab-view" class="ribbon-page" hidden>
+        <section class="rgroup" aria-labelledby="label-zoom"><div class="group-body"><button class="big" data-zoom="in"><img src="./icons/magnifier.png" alt="">Увеличить</button><button class="big" data-zoom="out"><img src="./icons/magnifier.png" alt="">Уменьшить</button><button class="big" data-zoom="reset">100%</button></div><h2 id="label-zoom">Масштаб</h2></section>
+        <section class="rgroup" aria-labelledby="label-visibility"><div class="group-body"><div class="checks"><label><input type="checkbox" id="show-status" checked>Строка состояния</label><label><input type="checkbox" id="grid">Линии сетки</label></div></div><h2 id="label-visibility">Показать или скрыть</h2></section>
+        <section class="rgroup" aria-labelledby="label-screen"><div class="group-body"><button class="big" data-command="fullscreen">Во весь<br>экран</button></div><h2 id="label-screen">Экран</h2></section>
+      </div>
+    </div>
+  </div>
+  <div id="textbar"></div>
+  <main id="workspace" aria-label="Рабочая область"><div id="surface"><canvas id="canvas" width="960" height="540" aria-label="Холст для рисования">Для рисования необходим браузер с поддержкой Canvas.</canvas></div></main>
+  <footer id="statusbar">
+    <span id="coordinates"></span><span id="selection-size"></span><span role="status" aria-live="polite"></span>
+    <span id="dimensions">960 × 540 пикс</span>
+    <div class="zoom-controls"><output id="zoom-value" for="zoom-slider">100%</output><button data-zoom="out" aria-label="Уменьшить масштаб">−</button><input type="range" id="zoom-slider" aria-label="Масштаб холста" min="0" max="100" value="53"><button data-zoom="in" aria-label="Увеличить масштаб">+</button></div>
+  </footer>
+  <input type="file" id="file" accept="image/png,image/jpeg,image/bmp,image/gif,image/webp,image/tiff,.png,.jpg,.jpeg,.bmp,.gif,.webp,.tif,.tiff" hidden>
+  <noscript>Для работы редактора включите JavaScript.</noscript>
+</body>
+</html>
